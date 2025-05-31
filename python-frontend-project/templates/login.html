@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Login - Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        .container {
+            display: flex;
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .login-form {
+            flex: 1;
+            padding-right: 20px;
+        }
+        .login-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 15px;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 600;
+        }
+        input[type="text"],
+        input[type="password"],
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1.5px solid #bdc3c7;
+            border-radius: 6px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+        button {
+            margin-top: 25px;
+            padding: 12px;
+            background-color: #2980b9;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #1c5980;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h2>EduTracker Login</h2>
+            
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+            <form method="POST" action="/">
+                <label for="role">Select Role:</label>
+                <select name="role" id="role" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="student">Student</option>
+                    <option value="lecturer">Lecturer</option>
+                </select>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required />
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required />
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div class="login-image">
+            <img src="{{ url_for('static', filename='edutrack_logo.jpg') }}" alt="EduTrack Logo" />
+        </div>
+    </div>
+</body>
+</html>

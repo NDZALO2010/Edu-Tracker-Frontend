@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Facial Scan - Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script>
+        // Access webcam and capture image
+        let videoStream;
+
+        async function startWebcam() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('video');
+                video.srcObject = videoStream;
+                video.play();
+            } catch (err) {
+                alert("Error accessing webcam: " + err.message);
+            }
+        }
+
+        function captureImage() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            document.getElementById('imageData').value = imageData;
+            document.getElementById('facialScanForm').submit();
+        }
+
+        window.onload = function() {
+            startWebcam();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Facial Scan Verification</h2>
+        <p>Please perform the facial scan to proceed.</p>
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <form id="facialScanForm" method="POST" action="/facial_scan">
+            <input type="hidden" name="imageData" id="imageData" />
+            <button type="button" onclick="captureImage()">Capture & Submit</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lecturer Dashboard - Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ username }} (Lecturer)</h2>
+
+        <h3>Select Module to View Attendance</h3>
+        <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
+            <label for="module">Module:</label>
+            <select name="module" id="module" required>
+                <option value="" disabled {% if not selected_module %}selected{% endif %}>Select a module</option>
+                {% for module in modules %}
+                <option value="{{ module.code }}" {% if selected_module == module.code %}selected{% endif %}>{{ module.code }} - {{ module.name }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <label for="start_date">Start Date:</label>
+            <input type="date" name="start_date" id="start_date" value="{{ request.form.start_date or '' }}">
+            <label for="end_date">End Date:</label>
+            <input type="date" name="end_date" id="end_date" value="{{ request.form.end_date or '' }}">
+            <br><br>
+            <button type="submit">View Attendance</button>
+        </form>
+
+        {% if attendance %}
+        <h3>Attendance Records for {{ selected_module }}</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Student Number</th>
+                    <th>Class Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance %}
+                <tr>
+                    <td>{{ record.student }}</td>
+                    <td>{{ record.class_name }}</td>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.time }}</td>
+                    <td>{{ record.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h3>Set a New Class Schedule</h3>
+        <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
+            <label for="module">Module:</label>
+            <select name="module" id="module" required>
+                <option value="" disabled selected>Select a module</option>
+                {% for module in modules %}
+                <option value="{{ module.code }}">{{ module.code }} - {{ module.name }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <label for="class_name">Class Name:</label>
+            <input type="text" name="class_name" id="class_name" required>
+            <br><br>
+            <label for="class_date">Date:</label>
+            <input type="date" name="class_date" id="class_date" required>
+            <br><br>
+            <label for="class_time">Time:</label>
+            <input type="time" name="class_time" id="class_time" required>
+            <br><br>
+            <button type="submit">Add Class Schedule</button>
+        </form>
+
+        {% if class_schedules %}
+        <h3>Your Class Schedules</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Module Code</th>
+                    <th>Class Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in class_schedules %}
+                <tr>
+                    <td>{{ schedule.module_code }}</td>
+                    <td>{{ schedule.class_name }}</td>
+                    <td>{{ schedule.date }}</td>
+                    <td>{{ schedule.time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

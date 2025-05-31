@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Student Dashboard - Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ username }} (Student)</h2>
+        <h3>Student Information</h3>
+        <ul>
+            <li><strong>Student Number:</strong> {{ student.student_number }}</li>
+            <li><strong>Surname and Initials:</strong> {{ student.surname_initials }}</li>
+            <li><strong>Email Address:</strong> {{ student.email }}</li>
+            <li><strong>Cellphone Number:</strong> {{ student.cellphone }}</li>
+        </ul>
+
+        <h3>Your Class Schedules</h3>
+        {% if class_schedules %}
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Module Code</th>
+                    <th>Class Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Mark Attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in class_schedules %}
+                <tr>
+                    <td>{{ schedule.module_code }}</td>
+                    <td>{{ schedule.class_name }}</td>
+                    <td>{{ schedule.date }}</td>
+                    <td>{{ schedule.time }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('dashboard_student') }}">
+                            <input type="hidden" name="module" value="{{ schedule.module_code }}" />
+                            <button type="submit">Mark Attendance</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No class schedules available.</p>
+        {% endif %}
+
+        <h3>Attendance Records</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Module Code</th>
+                    <th>Class Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance %}
+                    {% if record.student == username %}
+                    <tr>
+                        <td>{{ record.module }}</td>
+                        <td>{{ record.class_name }}</td>
+                        <td>{{ record.date }}</td>
+                        <td>{{ record.time }}</td>
+                        <td>{{ record.status }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>
