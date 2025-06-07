@@ -44,19 +44,26 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <div class="user-info-box">
-            <ul>
-                <li><strong>Student Number:</strong> {{ student_info.student_number or 'N/A' }}</li>
-                <li><strong>Surname and Initials:</strong> {{ student_info.surname_initials or 'N/A' }}</li>
-                <li><strong>Email Address:</strong> {{ student_info.email or 'N/A' }}</li>
-                <li><strong>Cellphone Number:</strong> {{ student_info.cellphone or 'N/A' }}</li>
-            </ul>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="student-id">Student Number: {{ student_info.student_number or 'N/A' }}</div>
+                <div class="student-name">{{ student_info.surname_initials or 'N/A' }}</div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#your-class-schedules">Your Class Schedules</a></li>
+                    <li><a href="#attendance-records">Attendance Records</a></li>
+                </ul>
+            </nav>
+            <a href="{{ url_for('logout') }}" class="sidebar-logout">Logout</a>
         </div>
-        <div style="overflow: hidden;">
+
+        <div class="main-content">
             <h2>Welcome(Student)</h2>
-            <h3>Your Class Schedules</h3>
+            <h3 id="your-class-schedules">Your Class Schedules</h3>
             {% if class_schedules %}
+            <a href="{{ url_for('download_class_schedule') }}" class="download-button" style="display:inline-block; margin-bottom: 10px; background-color: #3498db; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Download Class Schedule</a>
             <div class="student-class-schedules">
             <table border="1" cellpadding="5" cellspacing="0">
                 <thead>
@@ -93,7 +100,7 @@
             {% else %}
             <p>No class schedules available.</p>
             {% endif %}
-            <h3>Attendance Records</h3>
+            <h3 id="attendance-records">Attendance Records</h3>
             <table border="1" cellpadding="5" cellspacing="0">
                 <thead>
                     <tr>
@@ -119,7 +126,6 @@
                 </tbody>
             </table>
         </div>
-        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
     </div>
 </body>
 </html>
