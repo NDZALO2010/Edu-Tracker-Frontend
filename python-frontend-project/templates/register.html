@@ -2,32 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Login - Attendance System</title>
+    <title>Register - Attendance System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <style>
         .container {
-            display: flex;
-            max-width: 900px;
+            max-width: 600px;
             margin: 40px auto;
             background: #ffffff;
             padding: 30px 40px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .login-form {
-            flex: 1;
-            padding-right: 20px;
-        }
-        .login-image {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .login-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
         }
         form {
             display: flex;
@@ -40,6 +24,7 @@
             font-weight: 600;
         }
         input[type="text"],
+        input[type="email"],
         input[type="password"],
         select {
             padding: 10px;
@@ -49,6 +34,7 @@
             transition: border-color 0.3s ease;
         }
         input[type="text"]:focus,
+        input[type="email"]:focus,
         input[type="password"]:focus,
         select:focus {
             border-color: #2980b9;
@@ -79,24 +65,39 @@
 </head>
 <body>
     <div class="container">
-        <div class="login-form">
-            <h2>EduTracker Login</h2>
+        <h2>Register</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('register') }}">
+            <label for="student_number">Student Number / Lecturer Number:</label>
+            <input type="text" name="student_number" id="student_number" required />
             
-            {% if error %}
-                <p class="error">{{ error }}</p>
-            {% endif %}
-            <form method="POST" action="/">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required />
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required />
-                <button type="submit">Login</button>
-            </form>
-            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
-        </div>
-        <div class="login-image">
-            <img src="{{ url_for('static', filename='edutrack_logo.jpg') }}" alt="EduTrack Logo" />
-        </div>
+            <label for="surname_initials">Surname and Initials:</label>
+            <input type="text" name="surname_initials" id="surname_initials" required />
+            
+            <label for="email">Email Address:</label>
+            <input type="email" name="email" id="email" required />
+            
+            <label for="cellphone">Cellphone Number:</label>
+            <input type="text" name="cellphone" id="cellphone" required />
+            
+            <label for="role">Register as:</label>
+            <select name="role" id="role" required>
+                <option value="" disabled selected>Select role</option>
+                <option value="student">Student</option>
+                <option value="lecturer">Lecturer</option>
+            </select>
+
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required />
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required />
+
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
     </div>
 </body>
 </html>

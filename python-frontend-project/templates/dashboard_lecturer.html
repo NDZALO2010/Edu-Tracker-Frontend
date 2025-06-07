@@ -6,100 +6,157 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-    <div class="container">
-        <h2>Welcome, {{ username }} (Lecturer)</h2>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="lecturer-id">Lecturer Number: {{ lecturer_info.lecturer_number or 'N/A' }}</div>
+                <div class="lecturer-name">{{ lecturer_info.surname_initials or 'N/A' }}</div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#new-class-schedule">New Class Schedule</a></li>
+                    <li><a href="#class-schedule">Class Schedule</a></li>
+                    <li><a href="#view-attendance">View Students Attendance</a></li>
+                </ul>
+            </nav>
+            <a href="{{ url_for('logout') }}" class="sidebar-logout">Logout</a>
+        </div>
 
-        <h3>Select Module to View Attendance</h3>
-        <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
-            <label for="module">Module:</label>
-            <select name="module" id="module" required>
-                <option value="" disabled {% if not selected_module %}selected{% endif %}>Select a module</option>
-                {% for module in modules %}
-                <option value="{{ module.code }}" {% if selected_module == module.code %}selected{% endif %}>{{ module.code }} - {{ module.name }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-            <label for="start_date">Start Date:</label>
-            <input type="date" name="start_date" id="start_date" value="{{ request.form.start_date or '' }}">
-            <label for="end_date">End Date:</label>
-            <input type="date" name="end_date" id="end_date" value="{{ request.form.end_date or '' }}">
-            <br><br>
-            <button type="submit">View Attendance</button>
-        </form>
+        <div class="main-content">
+            <h2>Welcome(Lecturer)</h2>
 
-        {% if attendance %}
-        <h3>Attendance Records for {{ selected_module }}</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Student Number</th>
-                    <th>Class Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in attendance %}
-                <tr>
-                    <td>{{ record.student }}</td>
-                    <td>{{ record.class_name }}</td>
-                    <td>{{ record.date }}</td>
-                    <td>{{ record.time }}</td>
-                    <td>{{ record.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+            <div class="dashboard-top">
+                <div class="dashboard-main-sections">
+                    <div class="user-info-box" style="display:none;">
+                        <ul>
+                            <li><strong>Lecturer Number:</strong> {{ lecturer_info.lecturer_number or 'N/A' }}</li>
+                            <li><strong>Surname and Initials:</strong> {{ lecturer_info.surname_initials or 'N/A' }}</li>
+                            <li><strong>Email:</strong> {{ lecturer_info.email or 'N/A' }}</li>
+                            <li><strong>Cellphone:</strong> {{ lecturer_info.cellphone or 'N/A' }}</li>
+                        </ul>
+                    </div>
 
-        <h3>Set a New Class Schedule</h3>
-        <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
-            <label for="module">Module:</label>
-            <select name="module" id="module" required>
-                <option value="" disabled selected>Select a module</option>
-                {% for module in modules %}
-                <option value="{{ module.code }}">{{ module.code }} - {{ module.name }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-            <label for="class_name">Class Name:</label>
-            <input type="text" name="class_name" id="class_name" required>
-            <br><br>
-            <label for="class_date">Date:</label>
-            <input type="date" name="class_date" id="class_date" required>
-            <br><br>
-            <label for="class_time">Time:</label>
-            <input type="time" name="class_time" id="class_time" required>
-            <br><br>
-            <button type="submit">Add Class Schedule</button>
-        </form>
+                    <div class="schedule-container">
+                        <div class="class-schedule" id="new-class-schedule">
+                            <h3>New Class Schedule</h3>
+                            <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
+                                <label for="module">Module:</label>
+                                <select name="module" id="module" required>
+                                    <option value="" disabled selected>Select a module</option>
+                                    {% for module in modules %}
+                                    <option value="{{ module.code }}">{{ module.code }} - {{ module.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                
+                                <label for="class_name">Class Name:</label>
+                                <input type="text" name="class_name" id="class_name" required>
+                                
+                                <label for="class_date">Date:</label>
+                                <input type="date" name="class_date" id="class_date" required>
+                                
+                                <label for="start_time">Start Time:</label>
+                                <input type="time" name="start_time" id="start_time" required>
 
-        {% if class_schedules %}
-        <h3>Your Class Schedules</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Module Code</th>
-                    <th>Class Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for schedule in class_schedules %}
-                <tr>
-                    <td>{{ schedule.module_code }}</td>
-                    <td>{{ schedule.class_name }}</td>
-                    <td>{{ schedule.date }}</td>
-                    <td>{{ schedule.time }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+                                <label for="end_time">End Time:</label>
+                                <input type="time" name="end_time" id="end_time" required>
+                                
+                                <button type="submit">Add Class Schedule</button>
+                            </form>
+                        </div>
 
-        <a href="{{ url_for('logout') }}">Logout</a>
+                        <div class="class-schedule-table" id="class-schedule">
+                            <h3>Class Schedule</h3>
+                        {% if class_schedules %}
+                        <a href="{{ url_for('download_class_schedule') }}" class="download-button" style="display:inline-block; margin-bottom: 10px; background-color: #3498db; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Download Class Schedule</a>
+                        <table border="1" cellpadding="5" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Module Name</th>
+                                    <th>Class Name</th>
+                                    <th>Day</th>
+                                    <th>Date</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in class_schedules %}
+                                <tr>
+                                    <td>
+                                        {% set module_name = None %}
+                                        {% for module in modules %}
+                                            {% if module.code == schedule.module_code %}
+                                                {% set module_name = module.name %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ module_name or schedule.module_code }}
+                                    </td>
+                                    <td>{{ schedule.class_name }}</td>
+                                    <td>{{ schedule.day }}</td>
+                                    <td>{{ schedule.date }}</td>
+                                    <td>{{ schedule.start_time }}</td>
+                                    <td>{{ schedule.end_time }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p>No class schedules available.</p>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-view" id="view-attendance">
+            <h3>View Students Attendance</h3>
+            <form method="POST" action="{{ url_for('dashboard_lecturer') }}">
+                <label for="module">Module:</label>
+                <select name="module" id="module" required>
+                    <option value="" disabled {% if not selected_module %}selected{% endif %}>Select a module</option>
+                    {% for module in modules %}
+                    <option value="{{ module.code }}" {% if selected_module == module.code %}selected{% endif %}>{{ module.code }} - {{ module.name }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="start_date">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ request.form.start_date or '' }}">
+                <label for="end_date">End Date:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ request.form.end_date or '' }}">
+                
+                <button type="submit">View Attendance</button>
+            </form>
+            {% if selected_module %}
+            <a href="{{ url_for('download_attendance_records', module=selected_module, start_date=request.form.start_date, end_date=request.form.end_date) }}" class="download-button" style="display:inline-block; margin-top: 10px; background-color: #3498db; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Download Attendance Records</a>
+            {% endif %}
+
+                {% if attendance %}
+                <h3>Attendance Records for {{ selected_module }}</h3>
+                <table border="1" cellpadding="5" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Student Number</th>
+                            <th>Class Name</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance %}
+                        <tr>
+                            <td>{{ record.student }}</td>
+                            <td>{{ record.class_name }}</td>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.time }}</td>
+                            <td>{{ record.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </body>
 </html>

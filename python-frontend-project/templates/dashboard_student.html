@@ -4,78 +4,122 @@
     <meta charset="UTF-8" />
     <title>Student Dashboard - Attendance System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script>
+        function checkAttendanceTime(event, form) {
+            const button = form.querySelector('button.mark-attendance-btn');
+            const startTimeStr = button.getAttribute('data-start-time');
+            const endTimeStr = button.getAttribute('data-end-time');
+            const dateStr = button.getAttribute('data-date');
+
+            const now = new Date();
+            const classDate = new Date(dateStr + 'T00:00:00');
+            if (now.toDateString() !== classDate.toDateString()) {
+                alert("Class is not today. Attendance cannot be marked.");
+                event.preventDefault();
+                return false;
+            }
+
+            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+
+            const startTime = new Date(classDate);
+            startTime.setHours(startHour, startMinute, 0);
+
+            const endTime = new Date(classDate);
+            endTime.setHours(endHour, endMinute, 0);
+
+            if (now < startTime) {
+                alert("Class has not started yet.");
+                event.preventDefault();
+                return false;
+            }
+            if (now > endTime) {
+                alert("Class has already ended. Attendance cannot be marked.");
+                event.preventDefault();
+                return false;
+            }
+            // Allow form submission
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h2>Welcome, {{ username }} (Student)</h2>
-        <h3>Student Information</h3>
-        <ul>
-            <li><strong>Student Number:</strong> {{ student.student_number }}</li>
-            <li><strong>Surname and Initials:</strong> {{ student.surname_initials }}</li>
-            <li><strong>Email Address:</strong> {{ student.email }}</li>
-            <li><strong>Cellphone Number:</strong> {{ student.cellphone }}</li>
-        </ul>
-
-        <h3>Your Class Schedules</h3>
-        {% if class_schedules %}
-        <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Module Code</th>
-                    <th>Class Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Mark Attendance</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for schedule in class_schedules %}
-                <tr>
-                    <td>{{ schedule.module_code }}</td>
-                    <td>{{ schedule.class_name }}</td>
-                    <td>{{ schedule.date }}</td>
-                    <td>{{ schedule.time }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('dashboard_student') }}">
-                            <input type="hidden" name="module" value="{{ schedule.module_code }}" />
-                            <button type="submit">Mark Attendance</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No class schedules available.</p>
-        {% endif %}
-
-        <h3>Attendance Records</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Module Code</th>
-                    <th>Class Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in attendance %}
-                    {% if record.student == username %}
+        <div class="user-info-box">
+            <ul>
+                <li><strong>Student Number:</strong> {{ student_info.student_number or 'N/A' }}</li>
+                <li><strong>Surname and Initials:</strong> {{ student_info.surname_initials or 'N/A' }}</li>
+                <li><strong>Email Address:</strong> {{ student_info.email or 'N/A' }}</li>
+                <li><strong>Cellphone Number:</strong> {{ student_info.cellphone or 'N/A' }}</li>
+            </ul>
+        </div>
+        <div style="overflow: hidden;">
+            <h2>Welcome(Student)</h2>
+            <h3>Your Class Schedules</h3>
+            {% if class_schedules %}
+            <div class="student-class-schedules">
+            <table border="1" cellpadding="5" cellspacing="0">
+                <thead>
                     <tr>
-                        <td>{{ record.module }}</td>
-                        <td>{{ record.class_name }}</td>
-                        <td>{{ record.date }}</td>
-                        <td>{{ record.time }}</td>
-                        <td>{{ record.status }}</td>
+                        <th>Module Code</th>
+                        <th>Class Name</th>
+                        <th>Day</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Mark Attendance</th>
                     </tr>
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <a href="{{ url_for('logout') }}">Logout</a>
+                </thead>
+                <tbody>
+                    {% for schedule in class_schedules %}
+                    <tr>
+                        <td>{{ schedule.module_code }}</td>
+                        <td>{{ schedule.class_name }}</td>
+                        <td>{{ schedule.day }}</td>
+                        <td>{{ schedule.date }}</td>
+                        <td>{{ schedule.start_time }}</td>
+                        <td>{{ schedule.end_time }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('dashboard_student') }}" onsubmit="return checkAttendanceTime(event, this);">
+                                <input type="hidden" name="module" value="{{ schedule.module_code }}" />
+                                <button type="submit" class="mark-attendance-btn" data-start-time="{{ schedule.start_time }}" data-end-time="{{ schedule.end_time }}" data-date="{{ schedule.date }}">Mark Attendance</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% else %}
+            <p>No class schedules available.</p>
+            {% endif %}
+            <h3>Attendance Records</h3>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Module Code</th>
+                        <th>Class Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance %}
+                        {% if record.student == username %}
+                        <tr>
+                            <td>{{ record.module }}</td>
+                            <td>{{ record.class_name }}</td>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.time }}</td>
+                            <td>{{ record.status }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
     </div>
 </body>
 </html>
