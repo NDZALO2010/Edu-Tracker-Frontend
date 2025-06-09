@@ -39,7 +39,7 @@ This project is a web application designed to track student attendance by confir
    ```
    python app.py
    ```
-5. Open your browser and go to `http://localhost:5000` to access the application.
+5. Open your browser and go to https://ndzalo2010.github.io/Edu-Tracker-Frontend/ to access the application.
 
 ## Author
 
